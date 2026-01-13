@@ -5,7 +5,7 @@ from torch.nn import functional as F
 # HyperParams
 batch_size = 64
 context_len = 256
-max_iters = 5000
+max_iters = 2000
 eval_interval = 500
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -183,5 +183,8 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
     
+torch.save(model.state_dict(), 'models/model_weights.pth')
+print("Model weights saved to model_weights.pth")
+
 context = torch.zeros((1,1), dtype=torch.long, device=device)
 print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
