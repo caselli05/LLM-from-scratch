@@ -167,24 +167,25 @@ class BigramLanguageModel(nn.Module):
             idx = torch.cat((idx,idx_next), dim=1)  # (B, T+1)
         return idx
     
-model = BigramLanguageModel()
-model = model.to(device=device)
+if __name__ == "__main__":
+    model = BigramLanguageModel()
+    model = model.to(device=device)
 
-optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
-for iter in range(max_iters):
-    if iter%eval_interval == 0:
-        losses = estimate_loss()
-        print(f"step {iter}: terin_loss={losses['train']:.4f}, val_loss={losses['val']:.4f}")
-    
-    xb, yb = get_batch('train')
-    logits, loss = model(xb, yb)
-    optimizer.zero_grad(set_to_none=True)
-    loss.backward()
-    optimizer.step()
-    
-torch.save(model.state_dict(), 'models/model_weights.pth')
-print("Model weights saved to model_weights.pth")
+    for iter in range(max_iters):
+        if iter%eval_interval == 0:
+            losses = estimate_loss()
+            print(f"step {iter}: terin_loss={losses['train']:.4f}, val_loss={losses['val']:.4f}")
+        
+        xb, yb = get_batch('train')
+        logits, loss = model(xb, yb)
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        optimizer.step()
+        
+    torch.save(model.state_dict(), 'models/model_weights.pth')
+    print("Model weights saved to model_weights.pth")
 
-context = torch.zeros((1,1), dtype=torch.long, device=device)
-print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
+    context = torch.zeros((1,1), dtype=torch.long, device=device)
+    print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
